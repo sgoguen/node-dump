@@ -1,22 +1,35 @@
 exports.dump = function dump(what, seen) {
+  //  Encodes strings to Html
+  //  TODO:  Replace this with something more robust
   function h(text) { return text.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  //  
   function link(url, name) { // makes abs urls abs urls -- rest: in-page #url:s
-    if (arguments.length != 2) { name = url; }
+    //  If one argument, assume text == url
+    if (arguments.length == 1) { name = url; }
+    //  If url begins with http pass through, otherwise assume relative URL
+    //  TODO:  Let's not do this
     url = /^https?:/i.test(url) ? url : '#'+ url;
     return '<a href="'+ h(url) +'">'+ h(name) +'</a>';
   }
+
   function linkUrls(html) {
     return html.replace(/\b(https?:\/\/\S+)/gi, link);
   }
+
+  //  Detect if array
   function isArray(obj) {
     return Object.prototype.toString.call(obj) === "[object Array]";
   }
+
+  //  Returns a type name, otherwise returns (?)
   function objectType(o) {
     if ('object' !== typeof o || null === o) return '';
     var type = o && o.constructor;
     return Object === type || Array === type ? '' : type.name || '(?)';
   }
 
+  //  Style prefix
   var out = seen ? '' :
     '<script>function toggle(x, e) {\n'+
     '  x = document.getElementById("fn_"+ x);\n' +
